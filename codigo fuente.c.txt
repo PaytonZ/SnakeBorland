@@ -1,0 +1,1167 @@
+   1.
+      /*SNAKE da geim by paytoNftw
+   2.
+       
+   3.
+       
+   4.
+      */
+   5.
+       
+   6.
+      //Includes
+   7.
+       
+   8.
+      #include <stdio.h>
+   9.
+      #include <conio.h>
+  10.
+      #include <stdlib.h>
+  11.
+      #include <time.h>
+  12.
+       
+  13.
+       
+  14.
+       
+  15.
+      // Módulos del Programa
+  16.
+       
+  17.
+       
+  18.
+      void Delay(double );
+  19.
+      int Titulo(void);
+  20.
+      void InicializarSerpiente(int , int [][3], int  );
+  21.
+      void Ponercomida(int [][3], int * , int * , int );
+  22.
+      void DibujarSerpiente(int , int[][3] ) ;
+  23.
+      int Finjuego(int *);
+  24.
+      int Comprobarlimites(int [][3], int , int );
+  25.
+      void PintarCuadrado(void);
+  26.
+       
+  27.
+      void Dibujarcomida(int , int [][3] );   //funcion sin usar.
+  28.
+       
+  29.
+       
+  30.
+       
+  31.
+       
+  32.
+      int main()
+  33.
+       
+  34.
+      {
+  35.
+       
+  36.
+      double delaytime=0.1;
+  37.
+      int tamano=4,fin=0, score=0;                  //por defecto inicia la serpiente con 4 de tamaño ,en direccion 'este'.
+  38.
+      int aumentarcol=1,aumentarfil=0;
+  39.
+      char t,direccion='e';
+  40.
+      int contcom=0, tiempocom=0;
+  41.
+      int dificil=0;
+  42.
+       
+  43.
+      int serpiente[50][3], comida[50][3];
+  44.
+       
+  45.
+       
+  46.
+      randomize();
+  47.
+       
+  48.
+      dificil=Titulo();  //'Explicacion' de como jugar y titulo/menu del juego.
+  49.
+       
+  50.
+      InicializarSerpiente(tamano, serpiente, dificil);
+  51.
+       
+  52.
+       
+  53.
+       
+  54.
+       
+  55.
+       
+  56.
+       
+  57.
+       
+  58.
+      while (fin!=1) //captura de teclado
+  59.
+       
+  60.
+      {
+  61.
+                      if (kbhit())   // si alguna tecla es pulsada entra
+  62.
+              {
+  63.
+                      t = getch();
+  64.
+       
+  65.
+                      if (t == 27)
+  66.
+            {  //escape
+  67.
+              t=0;
+  68.
+              while (t!=27) // crear seudopausa.
+  69.
+       
+  70.
+               {
+  71.
+               t=getch();
+  72.
+               }
+  73.
+            }
+  74.
+       
+  75.
+       
+  76.
+                      if (t == 0 )
+  77.
+                      {
+  78.
+                              t = getch();
+  79.
+                              switch (t)      // Mientras que nuestra serpiente vaya hacia un direccion no puede ir a la justo contraria. Ej,
+  80.
+                              {               // Cuando sube no puede bajar directamente, necesita un pasoprevio que es ir a derecha o izq.
+  81.
+       
+  82.
+                                      case 72 : if (direccion!='s')    //caso arriba
+  83.
+                               direccion='a';
+  84.
+       
+  85.
+                                              break;
+  86.
+       
+  87.
+                                      case  80 : if (direccion!='a')    //caso abajo
+  88.
+                                                                      direccion='s';
+  89.
+       
+  90.
+                                      break;
+  91.
+       
+  92.
+                                               case  77 :  if (direccion!='o')     //caso derecha
+  93.
+                               direccion='e'  ;
+  94.
+       
+  95.
+                                      break;
+  96.
+       
+  97.
+       
+  98.
+                                      case  75 : if (direccion!='e')        //caso izquierda
+  99.
+                                 direccion='o';
+ 100.
+       
+ 101.
+                                      break;
+ 102.
+                      }
+ 103.
+       
+ 104.
+               fflush(stdin);
+ 105.
+                      }
+ 106.
+              }
+ 107.
+       
+ 108.
+       
+ 109.
+       
+ 110.
+      Ponercomida(comida,&contcom,&tiempocom,dificil);
+ 111.
+       
+ 112.
+       
+ 113.
+      if (direccion=='a')
+ 114.
+      {
+ 115.
+       aumentarfil=-1;
+ 116.
+       aumentarcol=0;
+ 117.
+      }
+ 118.
+       
+ 119.
+      if (direccion=='s')
+ 120.
+      {
+ 121.
+              aumentarfil=1;
+ 122.
+              aumentarcol=0;
+ 123.
+      }
+ 124.
+      if (direccion=='e')
+ 125.
+      {
+ 126.
+         aumentarfil=0;
+ 127.
+              aumentarcol=1;
+ 128.
+      }
+ 129.
+      if (direccion=='o')
+ 130.
+      {
+ 131.
+       aumentarfil=0;
+ 132.
+       aumentarcol=-1;
+ 133.
+      }
+ 134.
+       
+ 135.
+       
+ 136.
+      //comprueba si ha 'comido'
+ 137.
+       
+ 138.
+              for (int i=0; i<=contcom;i++)
+ 139.
+      {
+ 140.
+              if (serpiente[0][0]==comida[i][0] && serpiente[0][1]==comida[i][1])
+ 141.
+         {  tamano++;
+ 142.
+       
+ 143.
+              for (int aux=i;aux<=contcom;aux++)
+ 144.
+            {                                           //esto deberia borrar el elemento que ya ha 'comido'
+ 145.
+               comida[aux][0]=comida[aux+1][0];
+ 146.
+               comida[aux][1]=comida[aux+1][1];
+ 147.
+       
+ 148.
+            }
+ 149.
+       
+ 150.
+             contcom--;
+ 151.
+       
+ 152.
+             //cuanto más coma mas puntos y mas rapido ira el juego , comprobamos tambien si ha comido un especial
+ 153.
+       
+ 154.
+       
+ 155.
+                       if (comida[i][2]==1) score=score+(40*(tamano-4));
+ 156.
+             else score=score+(20*(tamano-4));
+ 157.
+       
+ 158.
+             delaytime=delaytime-0.002;
+ 159.
+         }
+ 160.
+       
+ 161.
+      }
+ 162.
+       
+ 163.
+      //borrar cola, va a la ultima posicion y borra.
+ 164.
+       
+ 165.
+      gotoxy(serpiente[tamano][0],serpiente[tamano][1]);
+ 166.
+      printf(" ");
+ 167.
+       
+ 168.
+      //'empuja' el array , la ultima posicion se pierde
+ 169.
+       
+ 170.
+      for (int i=tamano;i>=1;i--)
+ 171.
+      {
+ 172.
+       
+ 173.
+      serpiente[i][0]=serpiente[i-1][0];
+ 174.
+      serpiente[i][1]=serpiente[i-1][1];
+ 175.
+       
+ 176.
+      }
+ 177.
+       
+ 178.
+      //realiza aumentos segun direccion
+ 179.
+       
+ 180.
+      serpiente[0][0]=serpiente[0][0]+aumentarcol;
+ 181.
+      serpiente[0][1]= serpiente[0][1]+aumentarfil;
+ 182.
+       
+ 183.
+       
+ 184.
+      //comprueba limites de la pantalla y choques con el cuerpo de la serpiente
+ 185.
+       
+ 186.
+      if (Comprobarlimites(serpiente, dificil, tamano)==1)
+ 187.
+      {
+ 188.
+      int finjuego=Finjuego(&score);
+ 189.
+       
+ 190.
+                              // si el usuario desea seguir jugando , se ponen las variables a sus valores iniciales ( esto creo que deberia modularlo xD)
+ 191.
+          if (finjuego==0)
+ 192.
+          {
+ 193.
+          tamano=4;
+ 194.
+          contcom=0;
+ 195.
+          direccion='e';
+ 196.
+          score=0;
+ 197.
+               delaytime=0.1;
+ 198.
+          InicializarSerpiente(tamano, serpiente, dificil);
+ 199.
+          }
+ 200.
+          else (fin)=1;
+ 201.
+      }
+ 202.
+       
+ 203.
+       
+ 204.
+      DibujarSerpiente(tamano, serpiente);
+ 205.
+       
+ 206.
+       
+ 207.
+      if (dificil==0) score++;
+ 208.
+       
+ 209.
+      gotoxy(68,3);
+ 210.
+      printf("Score : %00d",score);
+ 211.
+       
+ 212.
+       
+ 213.
+      Delay(delaytime);
+ 214.
+       
+ 215.
+       
+ 216.
+       
+ 217.
+       
+ 218.
+      }
+ 219.
+       
+ 220.
+       
+ 221.
+       
+ 222.
+       
+ 223.
+      getch();
+ 224.
+      return 0;
+ 225.
+       
+ 226.
+       
+ 227.
+      }
+ 228.
+       
+ 229.
+      void Delay(double delaytime)   //funcion para 'ralentizar el tiempo'
+ 230.
+      {
+ 231.
+       
+ 232.
+       clock_t start_time;//, cur_time;
+ 233.
+                              start_time = clock();
+ 234.
+                              while((clock() - start_time) < delaytime * CLOCKS_PER_SEC)
+ 235.
+                              {
+ 236.
+                              }
+ 237.
+       }
+ 238.
+       
+ 239.
+      int Titulo(void)
+ 240.
+       
+ 241.
+       {
+ 242.
+      const int POSICION1=20 , POSICION2=21 , POSICION3=22, cursorx=19 ;
+ 243.
+      int cursory=POSICION1 , fin=0,dificultad=0;
+ 244.
+      int cursor=219; // caracter de cuadrado
+ 245.
+      char t;
+ 246.
+       
+ 247.
+      printf("\n          ..######..##....##....###....##....##.########");
+ 248.
+      printf("\n          .##....##.###...##...##.##...##...##..##......");
+ 249.
+      printf("\n          .##.......####..##..##...##..##..##...##......");
+ 250.
+      printf("\n          ..######..##.##.##.##.....##.#####....######..");
+ 251.
+      printf("\n          .......##.##..####.#########.##..##...##......");
+ 252.
+      printf("\n          .##....##.##...###.##.....##.##...##..##......");
+ 253.
+      printf("\n          ..######..##....##.##.....##.##....##.########");
+ 254.
+       
+ 255.
+      printf("\n \n             DA GEIM aka El Juego by paytoNftw");
+ 256.
+       
+ 257.
+      printf("\n \n \n Mueve la serpiente con las teclas de direccion y hazla comer para crecer :D. \n Las comidas azules suman el doble que las normales . \n");
+ 258.
+       
+ 259.
+      printf("\n Elige la opcion que desees con el cursor y pulsa ENTER para continuar");
+ 260.
+       
+ 261.
+      gotoxy(cursorx,cursory);
+ 262.
+      printf("%c", cursor );
+ 263.
+       
+ 264.
+      gotoxy(cursorx+2,POSICION1);
+ 265.
+      printf("1. Jugar ahora!");
+ 266.
+       
+ 267.
+      gotoxy(cursorx+2,POSICION2);
+ 268.
+      printf("2. Cambiar nivel de dificultad: Facil");
+ 269.
+       
+ 270.
+      gotoxy(cursorx+2,POSICION3);
+ 271.
+      printf("3. Ver maximas puntuaciones");
+ 272.
+       
+ 273.
+       
+ 274.
+      while (fin!=1)
+ 275.
+       
+ 276.
+              {
+ 277.
+                      if (kbhit())   // si alguna tecla es pulsada entra
+ 278.
+              {
+ 279.
+                      t = getch();
+ 280.
+       
+ 281.
+                      if (t==13)
+ 282.
+                      {
+ 283.
+       
+ 284.
+       
+ 285.
+       
+ 286.
+                      switch(cursory)
+ 287.
+                      {
+ 288.
+                      case POSICION1:
+ 289.
+                      clrscr();
+ 290.
+            fin=1;
+ 291.
+                      break;
+ 292.
+       
+ 293.
+                      case POSICION2:
+ 294.
+            if (dificultad==0)
+ 295.
+              {
+ 296.
+               gotoxy(cursorx+2,POSICION2);
+ 297.
+                              printf("                                                     ");
+ 298.
+               gotoxy(cursorx+2,POSICION2);
+ 299.
+                              printf("2. Cambiar nivel de dificultad: Dificil");
+ 300.
+       
+ 301.
+               dificultad=1;
+ 302.
+       
+ 303.
+              }
+ 304.
+            else
+ 305.
+            {
+ 306.
+       
+ 307.
+              gotoxy(cursorx+2,POSICION2);
+ 308.
+                              printf("                                                     ");
+ 309.
+               gotoxy(cursorx+2,POSICION2);
+ 310.
+                              printf("2. Cambiar nivel de dificultad: Facil");
+ 311.
+       
+ 312.
+                dificultad=0;
+ 313.
+            }
+ 314.
+       
+ 315.
+                      break;
+ 316.
+       
+ 317.
+                      case POSICION3:
+ 318.
+       
+ 319.
+                      break;
+ 320.
+       
+ 321.
+                              }
+ 322.
+                      }
+ 323.
+                      else
+ 324.
+                      if (t == 0 )
+ 325.
+                      {
+ 326.
+                              t = getch();
+ 327.
+       
+ 328.
+                              switch (t)
+ 329.
+                              {
+ 330.
+                                      case 72 :
+ 331.
+                                       //caso arriba
+ 332.
+       
+ 333.
+                                       gotoxy(cursorx,cursory);
+ 334.
+                                       printf(" "); // borrar cursor
+ 335.
+                                       if (cursory==POSICION1) cursory=POSICION3;
+ 336.
+       
+ 337.
+                                       else cursory--;
+ 338.
+       
+ 339.
+                                       gotoxy(cursorx,cursory);
+ 340.
+                                       printf("%c", cursor );
+ 341.
+       
+ 342.
+       
+ 343.
+       
+ 344.
+       
+ 345.
+                                              break;
+ 346.
+       
+ 347.
+                                      case  80 : //caso abajo
+ 348.
+                                                gotoxy(cursorx,cursory);
+ 349.
+                                       printf(" ");      // borrar cursor
+ 350.
+                                       if (cursory==POSICION3) cursory=POSICION1;
+ 351.
+                                       else cursory++;
+ 352.
+       
+ 353.
+                                       gotoxy(cursorx,cursory);
+ 354.
+                                       printf("%c", cursor );
+ 355.
+       
+ 356.
+                                       break;
+ 357.
+       
+ 358.
+                              }
+ 359.
+                      }
+ 360.
+              }
+ 361.
+      }
+ 362.
+       
+ 363.
+       
+ 364.
+      clrscr();
+ 365.
+       
+ 366.
+      return dificultad;
+ 367.
+       
+ 368.
+       
+ 369.
+      }
+ 370.
+       
+ 371.
+      void Ponercomida(int comida[][3],int * contcom, int * tiempocom, int dificil)
+ 372.
+      {
+ 373.
+       
+ 374.
+       
+ 375.
+      int altcomida=random(20);   //tiempo aleatorio de aparicion de comida
+ 376.
+       
+ 377.
+       
+ 378.
+       
+ 379.
+      if (altcomida==10 && (*contcom)<5)  //  solo puede haber 5 comidas en juego
+ 380.
+              {
+ 381.
+              int c=2;
+ 382.
+              if (dificil==1)
+ 383.
+              {
+ 384.
+                comida[*contcom][0]=random(40)+16;    //posicion aleatoria x,y  para nivel dificil
+ 385.
+          comida[*contcom][1]=random(8)+7;
+ 386.
+                comida[*contcom][2]=random(3);
+ 387.
+        }
+ 388.
+        else
+ 389.
+        {
+ 390.
+              comida[*contcom][0]=random(76)+2;    //posicion aleatoria x,y y si se trata de comida especial (doble de puntos) o normal
+ 391.
+              comida[*contcom][1]=random(22)+2;
+ 392.
+              comida[*contcom][2]=random(3);
+ 393.
+        }
+ 394.
+              gotoxy(comida[*contcom][0],comida[*contcom][1]);
+ 395.
+       
+ 396.
+              textcolor(WHITE);
+ 397.
+              if (comida[*contcom][2]==1) textcolor(LIGHTCYAN);
+ 398.
+              cprintf("%c",c);
+ 399.
+       
+ 400.
+                      (*contcom)++;
+ 401.
+       
+ 402.
+                      if (*tiempocom==0) (*tiempocom)=1;   //inicializa la variable que borrará la comida
+ 403.
+              }
+ 404.
+       
+ 405.
+       
+ 406.
+                      if (tiempocom!=0) //si esta inicializada...
+ 407.
+              {
+ 408.
+                      (*tiempocom)++;
+ 409.
+                              if (*tiempocom>40)
+ 410.
+                              {
+ 411.
+                               (*tiempocom)=1;                 // borra la primera comida que se ha puesto y se empuja el array
+ 412.
+       
+ 413.
+                               gotoxy(comida[0][0],comida[0][1]);
+ 414.
+       
+ 415.
+                               printf(" ");
+ 416.
+       
+ 417.
+                               (*contcom)--;
+ 418.
+       
+ 419.
+       
+ 420.
+                               //empujamos array de comida
+ 421.
+                                      for (int i=0;i<=*contcom;i++)
+ 422.
+                                      {
+ 423.
+                                      comida[i][0]=comida[i+1][0];
+ 424.
+                                      comida[i][1]=comida[i+1][1];
+ 425.
+       
+ 426.
+                                      }
+ 427.
+       
+ 428.
+                               }
+ 429.
+              }
+ 430.
+      }
+ 431.
+       
+ 432.
+       
+ 433.
+      void DibujarSerpiente(int tamano, int serpiente[][3])
+ 434.
+      {
+ 435.
+       
+ 436.
+              for (int i=0;i<=tamano;i++)
+ 437.
+              {
+ 438.
+                                                                                                        //recorre todo el array , pinta de rojo todo excepto la cabeza (indice 0) que la pinta de verde.
+ 439.
+              int c=254;
+ 440.
+              textcolor(RED);
+ 441.
+              if (i==0) textcolor(GREEN);
+ 442.
+              gotoxy(serpiente[i][0],serpiente[i][1]);
+ 443.
+              cprintf("%c",c);
+ 444.
+       
+ 445.
+              }
+ 446.
+      }
+ 447.
+       
+ 448.
+      void InicializarSerpiente(int tamano,int serpiente[][3] ,int dificil)
+ 449.
+      {
+ 450.
+       
+ 451.
+      clrscr();
+ 452.
+       
+ 453.
+       
+ 454.
+         if  (dificil==1)
+ 455.
+         {
+ 456.
+          serpiente[0][0]=random(30)+20;
+ 457.
+          serpiente[0][1]=random(10)+7;
+ 458.
+          PintarCuadrado();
+ 459.
+         }
+ 460.
+         else
+ 461.
+         {
+ 462.
+      serpiente[0][0]=random(60)+3;  //valores iniciales
+ 463.
+      serpiente[0][1]=random(15)+2;
+ 464.
+        }
+ 465.
+       
+ 466.
+              for (int i=1;i<=tamano;i++)
+ 467.
+              {
+ 468.
+              serpiente[i][0]=serpiente[0][0]-i;     //serpiente 'recta' de tamaño 4(por defecto)
+ 469.
+              serpiente[i][1]=serpiente[0][1];
+ 470.
+       
+ 471.
+              }
+ 472.
+       
+ 473.
+              for (int i=tamano;i<=30;i++)
+ 474.
+              {
+ 475.
+              serpiente[i][0]=0;
+ 476.
+              serpiente[i][1]=0;
+ 477.
+              }
+ 478.
+      }
+ 479.
+       
+ 480.
+      void Dibujarcomida(int contcom, int comida[][3])   //funcion no usada.
+ 481.
+      {
+ 482.
+       
+ 483.
+              for (int i=0;i<=contcom;i++)
+ 484.
+              {
+ 485.
+       
+ 486.
+              int c=3;
+ 487.
+       
+ 488.
+       
+ 489.
+              gotoxy(comida[i][0],comida[i][1]);
+ 490.
+              printf("*");
+ 491.
+       
+ 492.
+              }
+ 493.
+      }
+ 494.
+      int Finjuego(int * score)
+ 495.
+      {
+ 496.
+      clrscr();
+ 497.
+        char volver;
+ 498.
+        int resultado;
+ 499.
+       
+ 500.
+         gotoxy(25,20);
+ 501.
+         printf("Has perdido :( Tu puntuacion ha sido de %d puntos",*score);
+ 502.
+         gotoxy(25,21);
+ 503.
+       
+ 504.
+         printf("¿Quieres volver a jugar? (S/N): ");
+ 505.
+         scanf("%c",&volver);
+ 506.
+       
+ 507.
+         if (volver=='S' || volver=='s')
+ 508.
+         return 0;
+ 509.
+         else if (volver=='N' || volver=='n') return 1;
+ 510.
+       
+ 511.
+       
+ 512.
+      }
+ 513.
+      int Comprobarlimites(int serpiente[50][3], int dificil, int tamano)
+ 514.
+      {
+ 515.
+      int x, y;
+ 516.
+       if (dificil==1)
+ 517.
+       {
+ 518.
+              for (x=16;x<=65;x++)
+ 519.
+              {
+ 520.
+              if ((serpiente[0][0]==x && (serpiente[0][1]==6 || serpiente[0][1]==20)) || (serpiente[0][0]<=15 || serpiente[0][0]>64))
+ 521.
+            return 1;
+ 522.
+              }
+ 523.
+       }
+ 524.
+       
+ 525.
+       for (int i=1;i<=tamano;i++)
+ 526.
+              {
+ 527.
+                      if (serpiente[0][0]==serpiente[i][0] && serpiente[0][1]==serpiente[i][1]) return 1;
+ 528.
+              }
+ 529.
+       
+ 530.
+       
+ 531.
+      if (serpiente[0][0]==79)  serpiente[0][0]=2;
+ 532.
+      if (serpiente[0][0]==1)  serpiente[0][0]=78;
+ 533.
+       
+ 534.
+      if (serpiente[0][1]==1)  serpiente[0][1]=23;
+ 535.
+      if (serpiente[0][1]==24)  serpiente[0][1]=2;
+ 536.
+       
+ 537.
+      return 0;
+ 538.
+       
+ 539.
+       
+ 540.
+      }
+ 541.
+       
+ 542.
+      void PintarCuadrado(void)
+ 543.
+      {
+ 544.
+      //limites de este cuadrado son definibles , simplemente cambiar las variablas xprincipio , xfinal etc.
+ 545.
+      int x,y;
+ 546.
+      int lateral=186,esquinasupder=187,esquinasupizq=201,esquinainfizq=200,esquinainfder=188,base=205;
+ 547.
+       
+ 548.
+      int xprincipio=15,xfinal=65,yprincipio=6,yfinal=20;
+ 549.
+       
+ 550.
+      for (int x=xprincipio;x<=xfinal;x++)
+ 551.
+      {
+ 552.
+       
+ 553.
+      if (x==xprincipio)
+ 554.
+              {
+ 555.
+              for (int y=yprincipio;y<=yfinal;y++)
+ 556.
+              {
+ 557.
+              gotoxy(xprincipio,y);
+ 558.
+                      printf("%c",lateral);
+ 559.
+                      gotoxy(xfinal,y);
+ 560.
+                      printf("%c",lateral);
+ 561.
+       
+ 562.
+                      }
+ 563.
+       
+ 564.
+         }
+ 565.
+              gotoxy(x,yprincipio);
+ 566.
+              printf("%c",base);
+ 567.
+              gotoxy(x,yfinal);
+ 568.
+              printf("%c",base);
+ 569.
+      }
+ 570.
+      //ajustes de esquinas
+ 571.
+       
+ 572.
+      gotoxy(xprincipio,yprincipio);
+ 573.
+      printf("%c",esquinasupizq);
+ 574.
+       
+ 575.
+      gotoxy(xfinal,yprincipio);
+ 576.
+      printf("%c",esquinasupder);
+ 577.
+       
+ 578.
+      gotoxy(xprincipio,yfinal);
+ 579.
+      printf("%c",esquinainfizq);
+ 580.
+       
+ 581.
+      gotoxy(xfinal,yfinal);
+ 582.
+      printf("%c",esquinainfder);
+ 583.
+      }
+ 584.
